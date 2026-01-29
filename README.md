@@ -151,11 +151,6 @@ PRCP-1000-PortugeseBank/
 
 ---
 
-## 📚 References
-
-Moro, S., Cortez, P., & Rita, P. (2014). *A Data-Driven Approach to Predict the Success of Bank Telemarketing*. Decision Support Systems.
-
----
 
 ## 👤 Author
 
