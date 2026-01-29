@@ -2,8 +2,6 @@
 
 ## 📌 Project Overview
 
-This project focuses on analyzing and modeling **direct marketing phone call campaigns** conducted by a Portuguese banking institution between **May 2008 and November 2010**. The objective is to **predict whether a customer will subscribe to a term deposit** based on demographic, campaign-related, and macroeconomic features.
-
 The project follows a complete **end-to-end data science workflow**, including Exploratory Data Analysis (EDA), feature engineering, model building, evaluation, threshold tuning, and business recommendations.
 
 ---
@@ -24,18 +22,6 @@ To build a **predictive classification model** that accurately identifies custom
 
 ---
 
-## 📂 Dataset Description
-
-* **Source:** Portuguese Bank Marketing Dataset
-* **Records:** 41,188 customers
-* **Features:** 21 (demographic, financial, campaign, and economic indicators)
-* **Target Variable:** `y` (yes / no)
-* **Class Distribution:**
-
-  * No: ~89%
-  * Yes: ~11% (Highly imbalanced)
-
----
 
 ## 🔍 Exploratory Data Analysis (EDA)
 
