@@ -4,3 +4,9 @@
 # Python cache
 __pycache__/
 *.pyc
+
+# Ignore generated outputs
+visualization/
+visulaization/
+results/
+*.png
