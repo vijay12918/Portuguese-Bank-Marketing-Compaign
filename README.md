@@ -1,134 +1,151 @@
-# PRCP-1000 – Portuguese Bank Marketing Prediction
+# PRCP-1000: Portuguese Bank Marketing Campaign Prediction
 
 ## 📌 Project Overview
 
-The project follows a complete **end-to-end data science workflow**, including Exploratory Data Analysis (EDA), feature engineering, model building, evaluation, threshold tuning, and business recommendations.
+The dataset contains customer demographics, financial information, previous campaign interactions, and macroeconomic indicators. The goal is to build a **robust, business-oriented machine learning model** that helps the bank identify high-potential customers and optimize marketing efforts.
 
 ---
 
-## 🎯 Problem Statement
+## 🎯 Business Objective
 
-Banks invest significant resources in telemarketing campaigns. However, only a small fraction of contacted customers subscribe to term deposits. Efficiently identifying customers who are most likely to subscribe can:
+To help the bank marketing team:
 
-* Reduce marketing costs
-* Improve conversion rates
-* Optimize campaign strategies
+* Identify customers who are **most likely to subscribe** to a term deposit
+* Reduce campaign cost by **avoiding low-probability leads**
+* Improve conversion rates using **data-driven targeting**
 
----
-
-## 🎯 Objective
-
-To build a **predictive classification model** that accurately identifies customers who are likely to subscribe to a term deposit (`y = yes`).
+This is a **binary classification problem** with a highly imbalanced target variable.
 
 ---
 
+## 🗂️ Dataset Information
+
+* **Source**: Portuguese Bank Marketing Dataset (UCI ML Repository)
+* **Records**: 41,188 customers
+* **Features**: 21 (demographic, campaign-related, macroeconomic)
+* **Target Variable**: `y`
+
+  * `yes` → Subscribed to term deposit
+  * `no` → Did not subscribe
+
+### Target Distribution
+
+* `No`: ~89%
+* `Yes`: ~11%
+
+> ⚠️ Due to class imbalance, accuracy alone is misleading. Metrics such as **F1-score, Recall, Precision, and ROC-AUC** are used.
+
+---
 
 ## 🔍 Exploratory Data Analysis (EDA)
 
-### Key Insights
+Key insights discovered during analysis:
 
-* Customers aged **30–40** have the highest subscription rates
-* Higher education levels correlate with higher subscription probability
-* **Cellular contact** is significantly more effective than telephone
-* Early contact attempts (1–3 calls) have the highest success rate
-* **Call duration strongly correlates with subscription** (data leakage risk)
-* Previous campaign success is a strong predictor of future subscriptions
-* Macroeconomic indicators (employment rate, Euribor rate, consumer confidence) strongly influence customer decisions
+### Customer Profile
 
-> ⚠️ **Data Leakage Note:** The `duration` feature was excluded from modeling because it is only known after the call ends.
+* Customers aged **30–40** show the highest subscription rates
+* **Higher education levels** (university degree, professional courses) lead to higher conversions
+* **Single customers** are more responsive than married/divorced customers
+* Customers **without personal loans or credit defaults** are more likely to subscribe
+
+### Campaign Strategy
+
+* **Cellular contact** is far more effective than telephone calls
+* Best conversion months: **March, April, September, October**
+* **Early contact attempts (1–3 calls)** perform best
+* Repeated calls reduce success and increase customer irritation
+
+### Previous Campaign Impact
+
+* Customers who **subscribed previously** have a very high chance of subscribing again
+* Warm leads outperform first-time contacts
+
+### Economic Factors
+
+* Customers are more likely to subscribe during:
+
+  * Low interest rate periods
+  * Higher consumer confidence
+  * Economic uncertainty (preference for safe investments)
 
 ---
 
-## ⚙️ Data Preprocessing & Feature Engineering
+## 🧹 Data Preprocessing & Feature Engineering
+
+### Key Steps
 
 * Removed duplicate records
-* Retained `unknown` values as valid categorical levels
-* Encoded categorical variables using **OneHotEncoder**
-* Scaled numerical variables using **StandardScaler** and **RobustScaler**
-* Feature engineering steps:
+* Retained `unknown` values as a valid category
+* **Removed data leakage** feature: `duration`
+* Feature engineering:
 
-  * Converted `pdays` into a binary feature: `previously_contacted`
-  * Capped campaign calls into:
+  * `pdays` → converted to binary `previously_contacted`
+  * `campaign` → capped into low (1–3) vs high (>3) contact groups
 
-    * `0`: Low contact (1–3 calls)
-    * `1`: High contact (>3 calls)
-* Dropped leakage feature `duration`
+### Encoding & Scaling
+
+* OneHotEncoding for categorical variables
+* RobustScaler for `age` (outliers)
+* StandardScaler for macroeconomic indicators
 
 ---
 
-## 🤖 Models Trained
+## 🤖 Model Building
 
-The following models were trained using pipelines and evaluated using **Stratified K-Fold Cross Validation**:
+Multiple models were trained using **Pipeline + ColumnTransformer**:
 
 * Logistic Regression (baseline)
 * Random Forest Classifier
 * Gradient Boosting Classifier (tuned)
 * XGBoost Classifier (tuned)
 
-### Evaluation Metrics
+### Techniques Used
 
-Given the imbalanced dataset, the following metrics were used:
-
-* Precision
-* Recall
-* F1-score
-* ROC-AUC
-
-Threshold tuning was applied to optimize business outcomes.
+* Stratified Train-Test Split
+* Stratified K-Fold Cross Validation
+* Class imbalance handling (`class_weight`, `scale_pos_weight`)
+* Threshold tuning to optimize F1-score
 
 ---
 
-## 📊 Model Comparison
+## 📊 Model Performance Comparison
 
 | Model                     | Threshold | F1-score | Precision | Recall   | ROC-AUC  |
 | ------------------------- | --------- | -------- | --------- | -------- | -------- |
 | Logistic Regression       | 0.6       | 0.49     | 0.41      | 0.62     | 0.80     |
-| Random Forest             | 0.3       | 0.42     | 0.38      | 0.47     | 0.76     |
+| Random Forest             | 0.3       | 0.42     | 0.38      | 0.46     | 0.76     |
 | Gradient Boosting (Tuned) | 0.6       | 0.51     | 0.43      | 0.62     | 0.80     |
 | **XGBoost (Tuned)**       | **0.7**   | **0.52** | **0.49**  | **0.57** | **0.80** |
 
----
-
-## 🏆 Final Model Selection
-
-**XGBoost (Tuned)** was selected as the final model because it:
-
-* Achieved the **highest F1-score**
-* Provided a strong balance between precision and recall
-* Handled class imbalance effectively using `scale_pos_weight`
-* Captured complex non-linear relationships in the data
-
-The probability threshold was optimized to **0.7** to balance customer acquisition and marketing cost.
+✅ **Final Model Selected: XGBoost (Tuned)**
 
 ---
 
-## 📌 Business Recommendations
+## 🏆 Final Model Justification
 
-* Focus campaigns on customers aged **30–40** with higher education
-* Prioritize **cellular-based marketing** over telephone calls
-* Limit contact attempts to **1–3 calls** per customer
-* Re-target customers who subscribed in previous campaigns
-* Align marketing efforts with favorable economic conditions (low interest rates, higher consumer confidence)
+* Best balance between **precision and recall**
+* Highest **F1-score** among all models
+* Strong **ROC-AUC (~0.80)** indicating excellent class separation
+* Minimizes false negatives → critical for marketing use cases
 
----
-
-## 🚀 Deployment Considerations
-
-* The final trained pipeline is **deployment-ready**
-* Data leakage features are removed
-* Threshold tuning allows flexible business alignment
-* The model can be serialized using `pickle` for real-time inference
+From a business standpoint, **recall is more important** than precision, as missing potential subscribers results in lost revenue.
 
 ---
 
-## 🛠️ Technologies Used
+## 🔑 Feature Importance (XGBoost)
 
-* Python
-* Pandas, NumPy
-* Matplotlib, Seaborn
-* Scikit-learn
-* XGBoost
-* Imbalanced-learn
+Top contributing features:
+
+* `euribor3m`
+* `emp.var.rate`
+* `nr.employed`
+* `poutcome_success`
+* `contact_cellular`
+* Campaign intensity
+
+### Insight
+
+Campaign success is driven more by **economic conditions and prior engagement** than by demographics alone.
 
 ---
 
@@ -137,25 +154,71 @@ The probability threshold was optimized to **0.7** to balance customer acquisiti
 ```
 PRCP-1000-PortugeseBank/
 │
-├── data/
+├── Data/
+│   └── bank-additional-full.csv
+│
 ├── notebooks/
-│   └── EDA_and_Modeling.ipynb
-├── outputs/
-│   └── model_comparison_table.csv
-├── visualizations/
-│   └── *.png
-├── models/
-│   └── xgb_final_model.pkl
-└── README.md
+│   └── Portugese_Bank_Analysis.ipynb
+│
+├── visualization/
+│   ├── target_variable_analysis.png
+│   ├── ROC-Curve_comparison.png
+│   ├── xgb_feature_importance.png
+│   └── ...
+│
+├── results/
+│   ├── bank.csv
+│   └── Model Comparison Table.csv
+│
+├── artifacts/
+│   ├── xgb_final_model.pkl
+│   └── preprocessor.pkl
+│
+├── README.md
+└── requirements.txt
 ```
 
 ---
 
+## 🛠️ Tech Stack
 
-## 👤 Author
-
-**Madari Vijay Kumar**
+* **Python**
+* **Pandas, NumPy**
+* **Matplotlib, Seaborn**
+* **Scikit-learn**
+* **XGBoost**
+* **Imbalanced-learn**
 
 ---
 
-⭐ *If you find this project useful, feel free to star the repository!*
+## 🚀 How to Run the Project
+
+```bash
+pip install -r requirements.txt
+```
+
+```bash
+jupyter notebook
+```
+
+---
+
+## 📈 Future Improvements
+
+* Deploy model using Flask / FastAPI
+* Integrate Power BI dashboard for business users
+* Apply SHAP for advanced model explainability
+* Automate monthly retraining with fresh campaign data
+
+---
+
+## 👤 Author
+
+**Vijay Kumar Madari**
+Data Analytics & Machine Learning Enthusiast
+
+---
+
+## ⭐ If you found this project useful
+
+Give it a ⭐ on GitHub and feel free to fork or contribute!
